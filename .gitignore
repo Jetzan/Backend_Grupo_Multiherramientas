@@ -1,0 +1,25 @@
+.env
+/generated/prisma
+
+
+# Dependency directories
+node_modules/
+
+# Prisma generated client
+/generated/
+
+# Environments
+.env
+.env.local
+
+# Production build
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# System files
+.DS_Store
+Thumbs.db

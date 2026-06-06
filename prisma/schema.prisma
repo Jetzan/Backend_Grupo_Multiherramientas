@@ -1,0 +1,329 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model busquedas_log {
+  id         String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  termino    String        @db.VarChar(300)
+  resultados Int           @default(0)
+  origen     origen_evento @default(web_publica)
+  ip_hash    String?       @db.VarChar(64)
+  fecha      DateTime      @default(now()) @db.Timestamptz(6)
+
+  @@index([fecha(sort: Desc)], map: "idx_busquedas_fecha")
+  @@index([termino], map: "idx_busquedas_termino")
+}
+
+model categorias {
+  id                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nombre             String       @db.VarChar(120)
+  slug               String       @unique @db.VarChar(120)
+  descripcion        String?
+  categoria_padre_id String?      @db.Uuid
+  activa             Boolean      @default(true)
+  created_at         DateTime     @default(now()) @db.Timestamptz(6)
+  categorias         categorias?  @relation("categoriasTocategorias", fields: [categoria_padre_id], references: [id], onUpdate: NoAction)
+  other_categorias   categorias[] @relation("categoriasTocategorias")
+  productos          productos[]
+
+  @@index([categoria_padre_id], map: "idx_categorias_padre")
+  @@index([slug], map: "idx_categorias_slug")
+}
+
+model codigos_producto {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  producto_id String      @db.Uuid
+  codigo      String      @unique @db.VarChar(200)
+  tipo        tipo_codigo @default(barras)
+  created_at  DateTime    @default(now()) @db.Timestamptz(6)
+  productos   productos   @relation(fields: [producto_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([codigo], map: "idx_codigos_codigo")
+  @@index([producto_id], map: "idx_codigos_producto")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model compatibilidades {
+  id                                                      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  producto_id                                             String    @db.Uuid
+  compatible_con_id                                       String    @db.Uuid
+  nota                                                    String?
+  productos_compatibilidades_compatible_con_idToproductos productos @relation("compatibilidades_compatible_con_idToproductos", fields: [compatible_con_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  productos_compatibilidades_producto_idToproductos       productos @relation("compatibilidades_producto_idToproductos", fields: [producto_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([producto_id, compatible_con_id])
+  @@index([compatible_con_id], map: "idx_compat_compatible")
+  @@index([producto_id], map: "idx_compat_producto")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model contactos {
+  id       String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nombre   String          @db.VarChar(120)
+  email    String?         @db.VarChar(200)
+  telefono String?         @db.VarChar(30)
+  mensaje  String
+  estado   estado_contacto @default(nuevo)
+  ip_hash  String?         @db.VarChar(64)
+  fecha    DateTime        @default(now()) @db.Timestamptz(6)
+
+  @@index([estado, fecha(sort: Desc)], map: "idx_contactos_estado")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model detalle_ventas {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  venta_id        String    @db.Uuid
+  producto_id     String    @db.Uuid
+  cantidad        Int
+  precio_unitario Decimal   @db.Decimal(12, 2)
+  subtotal        Decimal?  @default(dbgenerated("((cantidad)::numeric * precio_unitario)")) @db.Decimal(14, 2)
+  productos       productos @relation(fields: [producto_id], references: [id], onUpdate: NoAction)
+  ventas          ventas    @relation(fields: [venta_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([producto_id], map: "idx_detalle_producto")
+  @@index([venta_id], map: "idx_detalle_venta")
+}
+
+model diagramas_pdf {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  producto_id    String    @db.Uuid
+  url            String    @db.VarChar(500)
+  nombre_archivo String    @db.VarChar(200)
+  tamano_bytes   Int?
+  subido_por     String?   @db.Uuid
+  subido_at      DateTime  @default(now()) @db.Timestamptz(6)
+  productos      productos @relation(fields: [producto_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  usuarios       usuarios? @relation(fields: [subido_por], references: [id], onUpdate: NoAction)
+
+  @@index([producto_id], map: "idx_diagramas_producto")
+}
+
+model eventos_producto {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  producto_id String        @db.Uuid
+  tipo        tipo_evento
+  origen      origen_evento @default(web_publica)
+  ip_hash     String?       @db.VarChar(64)
+  sesion_id   String?       @db.VarChar(100)
+  fecha       DateTime      @default(now()) @db.Timestamptz(6)
+  productos   productos     @relation(fields: [producto_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([fecha(sort: Desc)], map: "idx_eventos_fecha")
+  @@index([producto_id], map: "idx_eventos_producto")
+  @@index([tipo, fecha(sort: Desc)], map: "idx_eventos_tipo")
+}
+
+model imagenes_producto {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  producto_id  String    @db.Uuid
+  url          String    @db.VarChar(500)
+  alt_text     String?   @db.VarChar(200)
+  orden        Int       @default(0) @db.SmallInt
+  es_principal Boolean   @default(false)
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+  productos    productos @relation(fields: [producto_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([producto_id, orden], map: "idx_imagenes_producto")
+}
+
+model marcas {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nombre      String        @unique @db.VarChar(100)
+  slug        String        @unique @db.VarChar(100)
+  logo_url    String?       @db.VarChar(500)
+  descripcion String?
+  activa      Boolean       @default(true)
+  created_at  DateTime      @default(now()) @db.Timestamptz(6)
+  productos   productos[]
+  ubicaciones ubicaciones[]
+
+  @@index([slug], map: "idx_marcas_slug")
+}
+
+model movimientos_inventario {
+  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  producto_id    String          @db.Uuid
+  usuario_id     String?         @db.Uuid
+  tipo           tipo_movimiento
+  cantidad       Int
+  stock_anterior Int
+  stock_nuevo    Int
+  motivo         String?
+  referencia_id  String?         @db.Uuid
+  fecha          DateTime        @default(now()) @db.Timestamptz(6)
+  productos      productos       @relation(fields: [producto_id], references: [id], onUpdate: NoAction)
+  usuarios       usuarios?       @relation(fields: [usuario_id], references: [id], onUpdate: NoAction)
+
+  @@index([fecha(sort: Desc)], map: "idx_mov_fecha")
+  @@index([producto_id], map: "idx_mov_producto")
+}
+
+model noticias {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  titulo     String    @db.VarChar(200)
+  contenido  String
+  imagen_url String?   @db.VarChar(500)
+  publicada  Boolean   @default(false)
+  usuario_id String?   @db.Uuid
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime  @default(now()) @db.Timestamptz(6)
+  usuarios   usuarios? @relation(fields: [usuario_id], references: [id], onUpdate: NoAction)
+
+  @@index([publicada, created_at(sort: Desc)], map: "idx_noticias_publicada")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
+model productos {
+  id                                                             String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nombre                                                         String                   @db.VarChar(200)
+  modelo                                                         String?                  @db.VarChar(100)
+  descripcion                                                    String?
+  precio                                                         Decimal                  @default(0.00) @db.Decimal(12, 2)
+  existencia                                                     Int                      @default(0)
+  marca_id                                                       String                   @db.Uuid
+  categoria_id                                                   String                   @db.Uuid
+  ubicacion_id                                                   String?                  @db.Uuid
+  tipo_corriente                                                 tipo_corriente           @default(ninguna)
+  activo                                                         Boolean                  @default(true)
+  descontinuado                                                  Boolean                  @default(false)
+  enlace_publico                                                 String?                  @db.VarChar(500)
+  created_at                                                     DateTime                 @default(now()) @db.Timestamptz(6)
+  updated_at                                                     DateTime                 @default(now()) @db.Timestamptz(6)
+  codigos_producto                                               codigos_producto[]
+  compatibilidades_compatibilidades_compatible_con_idToproductos compatibilidades[]       @relation("compatibilidades_compatible_con_idToproductos")
+  compatibilidades_compatibilidades_producto_idToproductos       compatibilidades[]       @relation("compatibilidades_producto_idToproductos")
+  detalle_ventas                                                 detalle_ventas[]
+  diagramas_pdf                                                  diagramas_pdf[]
+  eventos_producto                                               eventos_producto[]
+  imagenes_producto                                              imagenes_producto[]
+  movimientos_inventario                                         movimientos_inventario[]
+  categorias                                                     categorias               @relation(fields: [categoria_id], references: [id], onUpdate: NoAction)
+  marcas                                                         marcas                   @relation(fields: [marca_id], references: [id], onUpdate: NoAction)
+  ubicaciones                                                    ubicaciones?             @relation(fields: [ubicacion_id], references: [id], onUpdate: NoAction)
+
+  @@index([activo, descontinuado], map: "idx_productos_activo")
+  @@index([categoria_id], map: "idx_productos_categoria")
+  @@index([marca_id], map: "idx_productos_marca")
+  @@index([ubicacion_id], map: "idx_productos_ubicacion")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model promociones {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  titulo       String    @db.VarChar(200)
+  descripcion  String?
+  imagen_url   String?   @db.VarChar(500)
+  fecha_inicio DateTime  @db.Date
+  fecha_fin    DateTime? @db.Date
+  activa       Boolean   @default(true)
+  usuario_id   String?   @db.Uuid
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime  @default(now()) @db.Timestamptz(6)
+  usuarios     usuarios? @relation(fields: [usuario_id], references: [id], onUpdate: NoAction)
+
+  @@index([activa, fecha_inicio(sort: Desc)], map: "idx_promociones_activa")
+}
+
+model ubicaciones {
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pasillo    String      @db.VarChar(20)
+  estante    String      @db.VarChar(20)
+  charola    String      @db.VarChar(20)
+  cajon      String      @db.VarChar(20)
+  marca_id   String?     @db.Uuid
+  disponible Boolean     @default(true)
+  notas      String?
+  productos  productos[]
+  marcas     marcas?     @relation(fields: [marca_id], references: [id], onUpdate: NoAction)
+
+  @@unique([pasillo, estante, charola, cajon])
+  @@index([marca_id], map: "idx_ubicaciones_marca")
+}
+
+model usuarios {
+  id                     String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nombre                 String                   @db.VarChar(120)
+  email                  String                   @unique @db.VarChar(200)
+  password_hash          String                   @db.VarChar(255)
+  rol                    rol_usuario              @default(operador)
+  activo                 Boolean                  @default(true)
+  ultimo_acceso          DateTime?                @db.Timestamptz(6)
+  created_at             DateTime                 @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime                 @default(now()) @db.Timestamptz(6)
+  diagramas_pdf          diagramas_pdf[]
+  movimientos_inventario movimientos_inventario[]
+  noticias               noticias[]
+  promociones            promociones[]
+  ventas                 ventas[]
+
+  @@index([email], map: "idx_usuarios_email")
+  @@index([rol], map: "idx_usuarios_rol")
+}
+
+model ventas {
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  usuario_id     String           @db.Uuid
+  total          Decimal          @default(0.00) @db.Decimal(14, 2)
+  observaciones  String?
+  fecha          DateTime         @default(now()) @db.Timestamptz(6)
+  detalle_ventas detalle_ventas[]
+  usuarios       usuarios         @relation(fields: [usuario_id], references: [id], onUpdate: NoAction)
+
+  @@index([fecha(sort: Desc)], map: "idx_ventas_fecha")
+  @@index([usuario_id], map: "idx_ventas_usuario")
+}
+
+enum estado_contacto {
+  nuevo
+  leido
+  respondido
+  archivado
+}
+
+enum origen_evento {
+  web_publica
+  admin
+  api
+}
+
+enum rol_usuario {
+  superadmin
+  admin
+  operador
+  solo_lectura
+}
+
+enum tipo_codigo {
+  barras
+  qr
+  interno
+  otro
+}
+
+enum tipo_corriente {
+  alambre
+  bateria
+  ninguna
+}
+
+enum tipo_evento {
+  vista
+  busqueda
+  descarga_pdf
+  contacto_whatsapp
+}
+
+enum tipo_movimiento {
+  entrada
+  salida
+  ajuste
+  devolucion
+  descontinuado
+}
