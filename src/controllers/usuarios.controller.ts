@@ -54,7 +54,7 @@ export async function createUser(
 
         const result = await registrarUsuario(req.body);
 
-        console.log(result);
+        console.log(`Usuario registrado: ${result}`);
 
         return res.status(201).json({
             mensaje: "Usuario creado correctamente",
