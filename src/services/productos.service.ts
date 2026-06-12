@@ -80,6 +80,7 @@ export async function crearProducto(
         await prisma.imagenes_producto.create({
             data: {
                 producto_id: nuevoProducto.id,
+                alt_text:resultado.public_id,
                 url: resultado.secure_url,
                 orden: i,
                 es_principal: i === 0
@@ -139,3 +140,87 @@ export async function obtenerProductosPorCategoria(categoria:string){
     }));
     return productosConImagenes;
 }
+
+
+
+interface IProductUpdate {
+    nombre: string,
+    modelo: string,
+    descripcion: string,
+    precio: number,
+    existencia: number,
+    marca_id: string,
+    ubicacion_id: string,
+    tipo_corriente: tipo_corriente,
+    categoria_id: string
+    activo: boolean
+    descontinuado: boolean
+}
+
+//Modificar producto
+
+export async function modificarProducto(id: string, datosActualizados: Partial<IProductUpdate>) {
+    const productoExistente = await prisma.productos.findUnique({ where: { id } });
+    if (!productoExistente) {
+        const error = new Error("Producto no encontrado");
+        (error as any).statusCode = 404;
+        (error as any).codigo = "PRODUCTO_NO_ENCONTRADO";
+        throw error;
+    }
+
+    const productoActualizado = await prisma.productos.update({
+        where: { id },
+        data: { ...datosActualizados }
+    });
+
+    return productoActualizado;
+}
+
+
+
+
+export async function eliminarProducto(id: string) {
+
+    const productoExistente = await prisma.productos.findUnique({ where: { id } });
+    
+    if (!productoExistente) {
+        const error = new Error("Producto no encontrado");
+        (error as any).statusCode = 404;
+        (error as any).codigo = "PRODUCTO_NO_ENCONTRADO";
+        throw error;
+    }
+
+
+    // Obtener imágenes del producto
+    const imagenes = await prisma.imagenes_producto.findMany({
+        where: {
+            producto_id: id
+        }
+    });
+
+    // Eliminar imágenes de Cloudinary
+    for (const imagen of imagenes) {
+        if(imagen){
+            await cloudinary.uploader.destroy(
+                imagen.alt_text!
+            );
+        }
+    }
+
+    // Eliminar registros de imágenes
+    await prisma.imagenes_producto.deleteMany({
+        where: {
+            producto_id: id
+        }
+    });
+
+    // Eliminar producto
+    await prisma.productos.delete({
+        where: {
+            id
+        }
+    });
+
+}
+
+
