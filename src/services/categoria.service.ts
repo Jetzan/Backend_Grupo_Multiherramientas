@@ -1,4 +1,6 @@
 import { prisma } from "../../lib/prisma";
+import generarSlug from "../utils/slug";
+
 
 //Crear categoria
 
@@ -12,9 +14,6 @@ function obtenerCategoriaPorNombre(nombre: string) {
   return prisma.categorias.findFirst({ where: { nombre } });
 }
 
-function generarSlug(nombre: string) {
-  return nombre.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
-}
 
 
 export async function crearCategoria(categoria: CreateCategoriaInterface) {

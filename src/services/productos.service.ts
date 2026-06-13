@@ -45,9 +45,6 @@ export async function crearProducto(
     producto : IProductCreate,
     imagenes: Express.Multer.File[]
 ){
-
-
-
    
     const data = {
         nombre: producto.nombre,
@@ -87,9 +84,6 @@ export async function crearProducto(
             }
         });
     }
-
-
-
     return {
         producto: nuevoProducto,
     };
