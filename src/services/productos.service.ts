@@ -2,6 +2,7 @@ import { tipo_corriente } from "../../generated/prisma/enums";
 import  {prisma} from "../../lib/prisma"
 import cloudinary from "../config/cloudinary";
 import multer from "multer";
+import { obtenerUbicacion ,crearUbicacion} from "./ubicacion.service";
 
 interface IProductCreate{
     nombre: string,
@@ -11,9 +12,13 @@ interface IProductCreate{
     existencia: number,
     marca: string,
     categoria:string,
-    ubicacion_id:string,
+    pasillo: string,
+    estante: string,
+    charola: string,
+    cajon: string,
+    marcaUbicacion?: string | null,
+    notas?: string | null,
     tipo_corriente: tipo_corriente,
-
 }
 
 
@@ -46,6 +51,32 @@ export async function crearProducto(
     imagenes: Express.Multer.File[]
 ){
    
+
+    //Verificar si la ubicacion ya existe
+    const ubicacionExistente = await obtenerUbicacion(
+        producto.pasillo,
+        producto.estante,
+        producto.charola,
+        producto.cajon
+    ).catch(() => null);
+
+    //Si la ubicación no existe, crearla
+    let ubicacionId;
+    if(!ubicacionExistente){
+        const nuevaUbicacion = await crearUbicacion(
+            {
+                pasillo: producto.pasillo,
+                estante: producto.estante,
+                charola: producto.charola,
+                cajon: producto.cajon,
+                marca: producto.marcaUbicacion
+            }
+        );
+        ubicacionId = nuevaUbicacion.id;
+    }else{
+        ubicacionId = ubicacionExistente.id;
+    }
+  
     const data = {
         nombre: producto.nombre,
         modelo: producto.modelo,
@@ -53,7 +84,7 @@ export async function crearProducto(
         precio: Number(producto.precio),
         existencia: Number(producto.existencia),
         marca_id: await obtenerIdMarca(producto.marca),
-        ubicacion_id: producto.ubicacion_id,
+        ubicacion_id: ubicacionId,
         tipo_corriente: producto.tipo_corriente,
         categoria_id: await obtenerIdCategoria(producto.categoria)
     }
@@ -105,6 +136,28 @@ export async function obtenerProductos(){
 }
 
 
+
+//Obtener productos activos
+export async function obtenerProductosActivos(){
+    //Obtener primero el producto y luego las imagenes
+    const productos = await prisma.productos.findMany({where:{activo:true}});
+    const productosConImagenes = await Promise.all(productos.map(async (producto) => {
+        const imagenes = await prisma.imagenes_producto.findMany({where:{producto_id:producto.id},select:{url:true,es_principal:true,orden:true}});
+        return {
+            ...producto,
+            imagenes
+        }
+    }));
+    return productosConImagenes;
+}
+
+
+
+
+
+
+
+
 //Obtener productos por marca
 
 export async function obtenerProductosPorMarca(marca:string){
@@ -146,8 +199,8 @@ interface IProductUpdate {
     marca_id: string,
     ubicacion_id: string,
     tipo_corriente: tipo_corriente,
-    categoria_id: string
-    activo: boolean
+    categoria_id: string,
+    activo: boolean,
     descontinuado: boolean
 }
 
@@ -218,3 +271,21 @@ export async function eliminarProducto(id: string) {
 }
 
 
+//Baja logica de producto
+
+export async function bajaLogicaProducto(id: string) {
+    const productoExistente = await prisma.productos.findUnique({ where: { id } });
+    if (!productoExistente) {
+        const error = new Error("Producto no encontrado");
+        (error as any).statusCode = 404;
+        (error as any).codigo = "PRODUCTO_NO_ENCONTRADO";
+        throw error;
+    }
+
+    const productoActualizado = await prisma.productos.update({
+        where: { id },
+        data: { activo: false }
+    });
+
+    return productoActualizado;
+}

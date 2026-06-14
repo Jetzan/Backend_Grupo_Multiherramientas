@@ -9,7 +9,7 @@ interface createMarcaInterface {
 }
 
 
-async function obtenerMarcaPorNombre(nombre: string) {
+export async function obtenerMarcaPorNombre(nombre: string) {
   return await prisma.marcas.findFirst({ where: { nombre } });
 }
 
