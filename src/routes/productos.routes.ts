@@ -17,11 +17,11 @@ router.get("/activos", getActiveProducts);
 
 
 //Obbtener productos por Categoria
-router.get("/productosCategoria", getProductsByCategory );
+router.post("/productosCategoria", getProductsByCategory );
 
 
 //Obtener productos por Marca
-router.get("/productosMarca", getProductsByBrand);
+router.post("/productosMarca", getProductsByBrand);
 
 //Baja logica de producto
 router.delete("/eliminarLogico", logicalDeleteProduct);
