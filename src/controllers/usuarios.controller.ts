@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-
+import { RequestConUsuario } from "../middlewares/auth.middleware";
 import { cambiarPassword, iniciarSesion, recuperarPassword, registrarUsuario } from "../services/usuario.service";
 
 
@@ -22,16 +22,23 @@ const transporter = nodemailer.createTransport({
 });
 
 
-async function enviarCorreo(correo: string) {
+async function enviarCorreo(correo: string, token: string) {
     console.log(correo);
+    const linkRecuperacion = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
 
     try {
         const info = await transporter.sendMail({
 
-            from: '"Mi Servidor Node" <grupomultiherramientas@hotmail.com>',
+            from: `"Grupo Multiherramientas" <${process.env.BREVO_USER}>`,
             to: correo,
             subject: 'Recuperación de contraseña',
-            html: '<h3>Recuperar contraseña</h3><a>Haz click aqui para recuperar tu contraseña de Grupo Multiherramientas</a>'
+            html: `
+                <h3>Recuperar contraseña</h3>
+                <p>Haz click en el siguiente enlace para cambiar tu contraseña.</p>
+                <p><strong>El enlace expira en 15 minutos.</strong></p>
+                <a href="${linkRecuperacion}">Cambiar contraseña</a>
+                <p>Si no solicitaste esto, ignora este correo.</p>
+            `
         }
         )
         console.log('✅ ¡Correos enviados con éxito!');
@@ -123,18 +130,32 @@ export async function loginUser(
         })
     }
 }
+
+//Helper separado para el token de recperacion de contraseña, con expiracion mas corta
+function generarTokenRecuperacion(usuario: IUsuarioJWT){
+    return jwt.sign({
+        id: usuario.id,
+        email: usuario.email,
+        rol: usuario.rol,
+        proposito: "recuperar_contraseña" //Diferenciacion del token login
+
+    }, process.env.JWT_SECRET!, {
+        expiresIn: "15m" //Token de recuperacion expira en 15 minutos
+    });
+}
+
 export async function recoverPassword(
     req: Request,
     res: Response
 ) {
     try {
         const result = await recuperarPassword(req.body.correo);
-        const token = generarJWT({
+        const token = generarTokenRecuperacion({
             id: result.id,
             email: result.email,
             rol: result.rol
         });
-        enviarCorreo(result.email);
+        await enviarCorreo(result.email, token);
         return res.status(200).json({
             mensaje: "Correo enviado",
         });
@@ -150,16 +171,28 @@ export async function changePassword(
     res: Response
 ) {
     try {
-        const result = await cambiarPassword({ correo: req.body.correo, password: req.body.password });
+        const { password } = req.body;
+        
+        // El correo viene del token verificado, no del body
+        const correo = (req as RequestConUsuario).usuario!.email;
+
+        if (!password || password.length < 8) {
+            return res.status(400).json({
+                codigo: "PASSWORD_INVALIDO",
+                mensaje: "La contraseña debe tener al menos 8 caracteres"
+            });
+        }
+
+        await cambiarPassword({ correo, password });
 
         return res.status(200).json({
-            mensaje: "Contraseña cambiada correctamente",
+            mensaje: "Contraseña cambiada correctamente"
         });
+
     } catch (error: any) {
         return res.status(error.statusCode || 500).json({
             codigo: error.codigo,
             mensaje: error.message
         });
     }
-
 }

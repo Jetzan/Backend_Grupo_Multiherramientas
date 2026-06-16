@@ -1,13 +1,12 @@
 import { Router } from "express";
+import { soloAdmin, verificarToken } from "../middlewares/auth.middleware";
 import { createProduct, getProducts,getActiveProducts ,getProductsByBrand, getProductsByCategory, logicalDeleteProduct, updateProduct} from "../controllers/productos.controller";
 import upload from "../middlewares/imagenes";
 
 
 const router = Router();
 
-
-//Crear producto
-router.post("/",upload.array("imagenes",10) ,createProduct);
+// Rutas Publicas (no requieren autenticacion)
 
 //Obtener todos los productos
 router.get("/", getProducts);
@@ -15,19 +14,21 @@ router.get("/", getProducts);
 //Obtener productos activos
 router.get("/activos", getActiveProducts);
 
-
 //Obbtener productos por Categoria
 router.post("/productosCategoria", getProductsByCategory );
-
 
 //Obtener productos por Marca
 router.post("/productosMarca", getProductsByBrand);
 
+//Rutas Protegias + usuario admin (requieren autenticacion)
+//Crear producto
+router.post("/", verificarToken, soloAdmin, upload.array("imagenes",10) ,createProduct);
+
 //Baja logica de producto
-router.delete("/eliminarLogico", logicalDeleteProduct);
+router.delete("/eliminarLogico", verificarToken, soloAdmin, logicalDeleteProduct);
 
 //Actualizar producto
-router.put("/updateProduct", updateProduct);
+router.put("/updateProduct", verificarToken, soloAdmin, updateProduct);
 
 
 export default router;

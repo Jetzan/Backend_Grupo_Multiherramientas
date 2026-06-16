@@ -1,22 +1,24 @@
 import { Router } from "express";
+import { verificarToken, soloAdmin, verificarTokenRecuperacion } from "../middlewares/auth.middleware";
 import { changePassword, createUser, loginUser, recoverPassword } from "../controllers/usuarios.controller";
-
+import { limitadorAuth } from '../middlewares/rateLimit.middleware';
 
 const router = Router();
 
 
+//Ruta solo admin
 //Crear Usuario
-router.post("/", createUser);
+router.post("/", verificarToken, soloAdmin, createUser);
 
 
+//Rutas Publicas (no requieren autenticacion)
 //Hacer login
-router.post("/login",loginUser);
-
+router.post("/login", limitadorAuth,loginUser);
 
 //Recuperar contraseña
 //Mandar email 
-router.post("/recover",recoverPassword);
+router.post("/recover", limitadorAuth,recoverPassword);
 //Cambiar la contraseña
-router.post("/changePassword",changePassword);
+router.post("/changePassword", verificarTokenRecuperacion, limitadorAuth,changePassword);
 
 export default router;
