@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { soloAdmin, verificarToken } from "../middlewares/auth.middleware";
-import { createProduct, getProducts,getActiveProducts ,getProductsByBrand, getProductsByCategory, logicalDeleteProduct, updateProduct, searchProducts} from "../controllers/productos.controller";
+import { createProduct, getProducts,getActiveProducts ,getProductsByBrand, getProductsByCategory, logicalDeleteProduct, updateProduct, searchProducts, getProductById} from "../controllers/productos.controller";
 import upload from "../middlewares/imagenes";
 
 
@@ -13,6 +13,10 @@ router.get("/", getProducts);
 
 //Obtener productos activos
 router.get("/activos", getActiveProducts);
+
+//Obtener producto por ID
+router.get("/:id", getProductById);
+
 
 //Obbtener productos por Categoria
 router.post("/productosCategoria", getProductsByCategory );

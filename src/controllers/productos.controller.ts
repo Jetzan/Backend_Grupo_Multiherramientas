@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 
-import { crearProducto, obtenerProductos, obtenerProductosActivos, obtenerProductosPorCategoria, obtenerProductosPorMarca, bajaLogicaProducto, modificarProducto, buscarProductos } from "../services/productos.service";
+import { crearProducto, obtenerProductos, obtenerProductosActivos, obtenerProductosPorCategoria, obtenerProductosPorMarca, bajaLogicaProducto, modificarProducto, buscarProductos, obtenerProductoPorId } from "../services/productos.service";
 
 import multer from "multer";
 
@@ -117,6 +117,31 @@ export async function getProductsByCategory(
         console.log(`Productos obtenidos por categoria ${categoria}: ${result.length}`)
         return res.status(200).json({
             mensaje: "Productos obtenidos correctamente",
+            data: result
+        });
+    } catch (error: any) {
+        return res.status(error.statusCode || 500).json({
+            codigo: error.codigo,
+            mensaje: error.message
+        })
+    }
+}
+
+//Params de ruta para obtener producto por ID
+interface ParamsProductoId {
+    id: string;
+}
+
+//Obtener producto por ID
+export async function getProductById(
+    req: Request<ParamsProductoId>,
+    res: Response,
+) {
+    try {
+        const  id  = req.params.id;
+        const result = await obtenerProductoPorId(id);
+        return res.status(200).json({
+            mensaje: "Producto obtenido correctamente",
             data: result
         });
     } catch (error: any) {

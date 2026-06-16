@@ -190,6 +190,26 @@ export async function obtenerProductosPorCategoria(categoria:string){
 
 
 
+
+//Obtener producto por ID
+
+export async function obtenerProductoPorId(id:string){
+    const producto = await prisma.productos.findUnique({where:{id}});
+    if(!producto){
+        const error = new Error("Producto no encontrado");
+        (error as any).statusCode = 404;
+        (error as any).codigo = "PRODUCTO_NO_ENCONTRADO";
+        throw error;
+    }
+
+    const imagenes = await prisma.imagenes_producto.findMany({where:{producto_id:producto.id},select:{url:true,es_principal:true,orden:true}});
+    return {
+        ...producto,
+        imagenes
+    }
+}
+
+
 interface IProductUpdate {
     nombre: string,
     modelo: string,
