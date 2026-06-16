@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { soloAdmin, verificarToken } from "../middlewares/auth.middleware";
-import { createProduct, getProducts,getActiveProducts ,getProductsByBrand, getProductsByCategory, logicalDeleteProduct, updateProduct, searchProducts, getProductById} from "../controllers/productos.controller";
+import { createProduct, getProducts,getActiveProducts ,getProductsByBrand, getProductsByCategory, logicalDeleteProduct, updateProduct, searchProducts, getProductById, decrementProductStock} from "../controllers/productos.controller";
 import upload from "../middlewares/imagenes";
 
 
@@ -37,5 +37,7 @@ router.put("/updateProduct", verificarToken, soloAdmin, updateProduct);
 //Buscar productos
 router.get("/buscar", searchProducts);
 
+//Decrementar existencia producto
+router.put("/decrementarExistencia", verificarToken, soloAdmin, decrementProductStock);
 
 export default router;

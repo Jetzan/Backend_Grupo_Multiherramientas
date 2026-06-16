@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 
-import { crearProducto, obtenerProductos, obtenerProductosActivos, obtenerProductosPorCategoria, obtenerProductosPorMarca, bajaLogicaProducto, modificarProducto, buscarProductos, obtenerProductoPorId } from "../services/productos.service";
+import { crearProducto, obtenerProductos, obtenerProductosActivos, obtenerProductosPorCategoria, obtenerProductosPorMarca, bajaLogicaProducto, modificarProducto, buscarProductos, obtenerProductoPorId , decrementarExistenciaProducto} from "../services/productos.service";
 
 import multer from "multer";
 
@@ -138,7 +138,7 @@ export async function getProductById(
     res: Response,
 ) {
     try {
-        const  id  = req.params.id;
+        const id = req.params.id;
         const result = await obtenerProductoPorId(id);
         return res.status(200).json({
             mensaje: "Producto obtenido correctamente",
@@ -162,7 +162,7 @@ export async function updateProduct(
         console.log(req);
         console.log("...");
         console.log(req.body);
-        
+
         const { id,
             nombre,
             modelo,
@@ -237,7 +237,29 @@ export async function searchProducts(
             data: result
         });
     }
-        catch (error: any) {
+    catch (error: any) {
+        return res.status(error.statusCode || 500).json({
+            codigo: error.codigo,
+            mensaje: error.message
+        })
+    }
+}
+
+
+//Decrementar existencia de producto
+export async function decrementProductStock(
+    req: Request,
+    res: Response,
+) {
+    try {
+        const { id, cantidad } = req.body;
+        const result = await decrementarExistenciaProducto(id, cantidad);
+        console.log(`Existencia de producto decrementada: ${result}`)
+        return res.status(200).json({
+            mensaje: "Existencia de producto decrementada correctamente",
+            data: result
+        });
+    } catch (error: any) {
         return res.status(error.statusCode || 500).json({
             codigo: error.codigo,
             mensaje: error.message

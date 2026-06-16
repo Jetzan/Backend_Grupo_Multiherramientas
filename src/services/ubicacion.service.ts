@@ -76,3 +76,40 @@ export async function obtenerUbicacion(pasillo: string, estante: string, charola
     }
     return result;
 }
+
+//Obtener productos por ubicación
+export async function obtenerProductosPorUbicacion(pasillo: string, estante: string, charola: string, cajon: string) {
+    const ubicacion = await obtenerUbicacion(pasillo, estante, charola, cajon);
+    if(!ubicacion) {
+        const error = new Error("La ubicación no existe");
+        (error as any).statusCode = 404;
+        (error as any).codigo = "UBICACION_NO_EXISTE";
+        throw error;
+    }
+
+    
+    const result = await prisma.productos.findMany({
+        where: {
+            ubicacion_id: ubicacion.id,
+        }
+    });
+
+    //Construir el resultado con las imagenes
+    const resultConImagenes = await Promise.all(result.map(async (producto) => {
+        const imagenes = await prisma.imagenes_producto.findMany({
+            select: {
+                url: true,
+                alt_text: true,
+                orden: true,
+                es_principal: true
+            },
+            where: {
+                producto_id: producto.id
+            }
+            
+        });
+        return { ...producto, imagenes };
+    }));
+
+    return resultConImagenes;
+}

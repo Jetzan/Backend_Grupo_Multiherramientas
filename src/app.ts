@@ -4,6 +4,7 @@ import categoriasRoutes from './routes/categorias.routes'
 import usuariosRoutes from './routes/usuarios.routes'
 import productosRoutes from './routes/productos.routes'
 import marcasRoutes from './routes/marcas.routes';
+import ubicacionesRoutes from './routes/ubicaciones.routes';
 import cors from 'cors';
 import helmet from 'helmet'; // evita clickjacking, sniffing, XSS y otras vulnerabilidades relacionadas con las cabeceras HTTP
 import { limitadorGeneral } from './middlewares/rateLimit.middleware'; //Limita las peticiones}
@@ -27,6 +28,7 @@ app.use(express.json({limit: "1mb"})); // Limita cuerpo JSON para evitar abuso d
 app.use('/categorias', categoriasRoutes);
 app.use("/usuarios",usuariosRoutes);    
 app.use("/productos",productosRoutes);
-app.use("/marcas",marcasRoutes)
+app.use("/marcas",marcasRoutes),
+app.use("/ubicaciones",ubicacionesRoutes);
 
 export default app;

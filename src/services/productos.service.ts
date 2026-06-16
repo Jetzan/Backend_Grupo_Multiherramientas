@@ -329,3 +329,32 @@ export async function buscarProductos(query: string) {
     }));
     return productosConImagenes;
 }
+
+//Decrementar existencia de producto
+
+export async function decrementarExistenciaProducto(id: string, cantidad: number) {
+    const productoExistente = await obtenerProductoPorId(id).catch(() => null);
+    
+    //Verificar si el producto existe
+    if (!productoExistente) {
+        const error = new Error("Producto no encontrado");
+        (error as any).statusCode = 404;
+        (error as any).codigo = "PRODUCTO_NO_ENCONTRADO";
+        throw error;
+    }
+
+    //Verificar si hay suficiente existencia
+    if (productoExistente.existencia < cantidad) {
+        const error = new Error("No hay suficiente existencia");
+        (error as any).statusCode = 400;
+        (error as any).codigo = "EXISTENCIA_INSUFICIENTE";
+        throw error;
+    }
+
+    const productoActualizado = await prisma.productos.update({
+        where: { id },
+        data: { existencia: productoExistente.existencia - cantidad }
+    });
+    return productoActualizado;
+}
+
