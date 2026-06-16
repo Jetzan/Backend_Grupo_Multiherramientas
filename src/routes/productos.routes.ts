@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { soloAdmin, verificarToken } from "../middlewares/auth.middleware";
-import { createProduct, getProducts,getActiveProducts ,getProductsByBrand, getProductsByCategory, logicalDeleteProduct, updateProduct} from "../controllers/productos.controller";
+import { createProduct, getProducts,getActiveProducts ,getProductsByBrand, getProductsByCategory, logicalDeleteProduct, updateProduct, searchProducts} from "../controllers/productos.controller";
 import upload from "../middlewares/imagenes";
 
 
@@ -29,6 +29,9 @@ router.delete("/eliminarLogico", verificarToken, soloAdmin, logicalDeleteProduct
 
 //Actualizar producto
 router.put("/updateProduct", verificarToken, soloAdmin, updateProduct);
+
+//Buscar productos
+router.get("/buscar", searchProducts);
 
 
 export default router;

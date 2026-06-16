@@ -289,3 +289,23 @@ export async function bajaLogicaProducto(id: string) {
 
     return productoActualizado;
 }
+
+//buscar producto con contains
+export async function buscarProductos(query: string) {
+    const productos = await prisma.productos.findMany({
+        where: {
+            nombre: {
+                contains: query,
+                mode: "insensitive"
+            }
+        }
+    });
+    const productosConImagenes = await Promise.all(productos.map(async (producto) => {
+        const imagenes = await prisma.imagenes_producto.findMany({where:{producto_id:producto.id},select:{url:true,es_principal:true,orden:true}});
+        return {
+            ...producto,
+            imagenes
+        }
+    }));
+    return productosConImagenes;
+}

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 
-import { crearProducto, obtenerProductos, obtenerProductosActivos, obtenerProductosPorCategoria, obtenerProductosPorMarca, bajaLogicaProducto, modificarProducto } from "../services/productos.service";
+import { crearProducto, obtenerProductos, obtenerProductosActivos, obtenerProductosPorCategoria, obtenerProductosPorMarca, bajaLogicaProducto, modificarProducto, buscarProductos } from "../services/productos.service";
 
 import multer from "multer";
 
@@ -199,23 +199,23 @@ export async function logicalDeleteProduct(
 }
 
 
-
-
-/*
-
-
-
-      "id": "3768de61-0697-4d13-87d9-6268917f791f",
-      "nombre": "productoPrueba",
-      "modelo": "modeloPrueba",
-      "descripcion": "este es un producto de prueba ",
-      "precio": "200",
-      "existencia": 20,
-      "marca_id": "549358d8-5b6f-4e87-afc3-11d9b592a281",
-      "categoria_id": "3b6811e0-e884-4f7b-b3f9-a113c70b29f0",
-      "ubicacion_id": "c6bf35c0-2d7f-47fd-b3c9-07f76ca71a08",
-      "tipo_corriente": "alambre",
-      "activo": true,
-      "descontinuado": false,
-            */
-
+//Buscar productos que contienen cierta cadena en su nombre o descripción
+export async function searchProducts(
+    req: Request,
+    res: Response,
+) {
+    try {
+        const { query } = req.body;
+        const result = await buscarProductos(query);
+        return res.status(200).json({
+            mensaje: "Productos encontrados correctamente",
+            data: result
+        });
+    }
+        catch (error: any) {
+        return res.status(error.statusCode || 500).json({
+            codigo: error.codigo,
+            mensaje: error.message
+        })
+    }
+}
