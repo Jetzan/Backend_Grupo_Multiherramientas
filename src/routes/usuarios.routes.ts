@@ -8,7 +8,7 @@ const router = Router();
 
 //Ruta solo admin
 //Crear Usuario
-router.post("/", verificarToken, soloAdmin, createUser);
+router.post("/", createUser);
 
 
 //Rutas Publicas (no requieren autenticacion)

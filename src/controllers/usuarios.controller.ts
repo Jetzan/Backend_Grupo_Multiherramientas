@@ -29,7 +29,7 @@ async function enviarCorreo(correo: string, token: string) {
     try {
         const info = await transporter.sendMail({
 
-            from: `"Grupo Multiherramientas" <${process.env.BREVO_USER}>`,
+            from: `"Grupo Multiherramientas" <${process.env.BREVO_SENDER}>`,
             to: correo,
             subject: 'Recuperación de contraseña',
             html: `
@@ -43,7 +43,7 @@ async function enviarCorreo(correo: string, token: string) {
         )
         console.log('✅ ¡Correos enviados con éxito!');
         console.log('ID del mensaje Brevo:', info.messageId);
-
+        return info;
     } catch (error) {
         console.error('❌ Error completo:', error);
     }
@@ -155,7 +155,9 @@ export async function recoverPassword(
             email: result.email,
             rol: result.rol
         });
-        await enviarCorreo(result.email, token);
+        
+        const resCorreo = await enviarCorreo(result.email, token);
+        console.log(resCorreo);
         return res.status(200).json({
             mensaje: "Correo enviado",
         });
