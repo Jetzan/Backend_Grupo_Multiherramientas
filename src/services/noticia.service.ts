@@ -1,6 +1,7 @@
 import { prisma } from "../../lib/prisma";
 import { obtenerUsuarioPorCorreo } from "./usuario.service";
 import cloudinary from "../config/cloudinary";
+import multer from "multer";
 
 interface ICreateNotice {
     titulo: string,

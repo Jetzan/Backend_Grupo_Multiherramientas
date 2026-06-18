@@ -8,8 +8,5 @@ const router = Router();
 router.get("/productosPorUbicacion", verificarToken, getProductsByLocation);
 
 
-
-
-
 export default router;
 
