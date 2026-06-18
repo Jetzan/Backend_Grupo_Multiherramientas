@@ -11,7 +11,7 @@ export async function createProduct(
     res: Response,
 ) {
     try {
-
+        
         const imagenes = req.files as Express.Multer.File[];
 
         const result = await crearProducto(

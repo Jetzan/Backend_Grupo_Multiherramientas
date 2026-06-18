@@ -108,3 +108,10 @@ export async function cambiarPassword(user: IUsuarioChangePassword){
         data:{password_hash :await bcrypt.hash(user.password, 12) }
     })   
 }
+
+//Obtener usuario por correo
+
+export async function obtenerUsuarioPorCorreo(correo: string) {
+    const usuario = await prisma.usuarios.findFirst({ where: { email: correo } });
+    return usuario;
+}
