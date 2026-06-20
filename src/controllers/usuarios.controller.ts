@@ -12,16 +12,15 @@ dotenv.config();
 
 
 const transporter = nodemailer.createTransport({
-    host: "smtp-relay.brevo.com", 
-    port: 465,                    // Cambiamos al puerto SSL estándar
-    secure: true,                 // Ponemos TRUE porque el puerto 465 requiere SSL nativo
-    auth: {
-        user: process.env.BREVO_USER,
-        pass: process.env.BREVO_PASS
-    },
-    // Forzamos tiempos de espera para que si falla, nos avise rápido en los logs
-    connectionTimeout: 8000, 
-    socketTimeout: 8000
+  host: "smtp-relay.brevo.com",
+  port: 587,        // ← cambia a 587
+  secure: false,    // ← false para 587 (usa STARTTLS)
+  auth: {
+    user: process.env.BREVO_USER,
+    pass: process.env.BREVO_PASS
+  },
+  connectionTimeout: 8000,
+  socketTimeout: 8000
 });
 
 
