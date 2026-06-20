@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { createNotice, getNotices, getNoticeById, getPublishedNotices, deleteNoticeById, updateNoticeById } from "../controllers/noticias.controller";
-import upload from "../middlewares/imagenes";
+import { createNotice, getNotices, getNoticeById, getPublishedNotices, deleteNoticeById, updateNoticeById } from "../controllers/noticias.controller.js";
+import upload from "../middlewares/imagenes.js";
 
 const router = Router();
 

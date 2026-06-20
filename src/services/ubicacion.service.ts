@@ -1,6 +1,6 @@
-import { tipo_corriente } from "../../generated/prisma/enums";
-import { obtenerMarcaPorNombre } from "./marca.service";
-import { prisma } from "../../lib/prisma"
+import { tipo_corriente } from "../generated/prisma/enums.js";
+import { obtenerMarcaPorNombre } from "./marca.service.js";
+import { prisma } from "../lib/prisma.js";
 
 interface ILocationCreate {
     pasillo: string,

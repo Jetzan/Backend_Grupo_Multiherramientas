@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { crearCategoria, obtenerCategorias, obtenerCategoriaPorId, obtenerCategoriaPorSlug, eliminarCategoria } from "../services/categoria.service";
+import { crearCategoria, obtenerCategorias, obtenerCategoriaPorId, obtenerCategoriaPorSlug, eliminarCategoria } from "../services/categoria.service.js";
 
 
 //Crear categoria

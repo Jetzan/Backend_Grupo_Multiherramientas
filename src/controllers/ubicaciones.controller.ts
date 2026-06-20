@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { obtenerProductosPorUbicacion} from "../services/ubicacion.service";
+import { obtenerProductosPorUbicacion} from "../services/ubicacion.service.js";
 
 //Obtener productos por ubicación
 export async function getProductsByLocation(

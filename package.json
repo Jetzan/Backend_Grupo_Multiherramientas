@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/server.ts"
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "render-build": "prisma generate && npm run build"
   },
   "keywords": [],
   "author": "",
@@ -18,11 +20,12 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.1.0",
-    "@types/node": "^25.9.1",
+    "@types/node": "^25.9.4",
     "@types/nodemailer": "^8.0.0",
     "@types/pg": "^8.20.0",
     "prisma": "^7.8.0",
-    "tsx": "^4.22.3"
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",

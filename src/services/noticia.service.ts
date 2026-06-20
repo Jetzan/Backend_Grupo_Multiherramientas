@@ -1,6 +1,6 @@
-import { prisma } from "../../lib/prisma";
-import { obtenerUsuarioPorCorreo } from "./usuario.service";
-import cloudinary from "../config/cloudinary";
+import { prisma } from "../lib/prisma.js";
+import { obtenerUsuarioPorCorreo } from "./usuario.service.js";
+import cloudinary from "../config/cloudinary.js";
 import multer from "multer";
 
 interface ICreateNotice {

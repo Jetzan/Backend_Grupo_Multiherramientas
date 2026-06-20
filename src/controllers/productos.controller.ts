@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 
-import { crearProducto, obtenerProductos, obtenerProductosActivos, obtenerProductosPorCategoria, obtenerProductosPorMarca, bajaLogicaProducto, modificarProducto, buscarProductos, obtenerProductoPorId , decrementarExistenciaProducto} from "../services/productos.service";
+import { crearProducto, obtenerProductos, obtenerProductosActivos, obtenerProductosPorCategoria, obtenerProductosPorMarca, bajaLogicaProducto, modificarProducto, buscarProductos, obtenerProductoPorId , decrementarExistenciaProducto} from "../services/productos.service.js";
 
 import multer from "multer";
 

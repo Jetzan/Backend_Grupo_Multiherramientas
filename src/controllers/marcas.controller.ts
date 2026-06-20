@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 
-import { crearMarca, obtenerMarcaPorSlug, obtenerMarcas, eliminarMarca, obtenerMarcaPorId } from "../services/marca.service";
+import { crearMarca, obtenerMarcaPorSlug, obtenerMarcas, eliminarMarca, obtenerMarcaPorId } from "../services/marca.service.js";
 
 
 

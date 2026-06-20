@@ -1,5 +1,5 @@
-import { prisma } from "../../lib/prisma";
-import generarSlug from "../utils/slug";
+import { prisma } from "../lib/prisma.js";
+import generarSlug from "../utils/slug.js";
 
 
 //Crear categoria

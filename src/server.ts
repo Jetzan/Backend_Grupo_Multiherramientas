@@ -1,7 +1,7 @@
-import app from './app';
+import app from './app.js';
 
 // Puerto en el que escucha el servidor
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Iniciar servidor
 app.listen(PORT,()=>{

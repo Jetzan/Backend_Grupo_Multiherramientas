@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import { crearNoticia ,obtenerNoticiaPorId, obtenerNoticias, actualizarNoticiaPorId, eliminarNoticiaPorId, obtenerNoticiasPublicadas} from "../services/noticia.service";
+import { crearNoticia ,obtenerNoticiaPorId, obtenerNoticias, actualizarNoticiaPorId, eliminarNoticiaPorId, obtenerNoticiasPublicadas} from "../services/noticia.service.js";
 import multer from "multer";
 
 

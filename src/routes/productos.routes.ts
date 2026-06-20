@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { soloAdmin, verificarToken } from "../middlewares/auth.middleware";
-import { createProduct, getProducts,getActiveProducts ,getProductsByBrand, getProductsByCategory, logicalDeleteProduct, updateProduct, searchProducts, getProductById, decrementProductStock} from "../controllers/productos.controller";
-import upload from "../middlewares/imagenes";
+import { soloAdmin, verificarToken } from "../middlewares/auth.middleware.js";
+import { createProduct, getProducts,getActiveProducts ,getProductsByBrand, getProductsByCategory, logicalDeleteProduct, updateProduct, searchProducts, getProductById, decrementProductStock} from "../controllers/productos.controller.js";
+import upload from "../middlewares/imagenes.js";
 
 
 const router = Router();
@@ -35,7 +35,7 @@ router.delete("/eliminarLogico", verificarToken, soloAdmin, logicalDeleteProduct
 router.put("/updateProduct", verificarToken, soloAdmin, updateProduct);
 
 //Buscar productos
-router.get("/buscar", searchProducts);
+router.post("/buscar", searchProducts);
 
 //Decrementar existencia producto
 router.put("/decrementarExistencia", verificarToken, soloAdmin, decrementProductStock);

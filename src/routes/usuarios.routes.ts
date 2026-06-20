@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { verificarToken, soloAdmin, verificarTokenRecuperacion } from "../middlewares/auth.middleware";
-import { changePassword, createUser, loginUser, recoverPassword } from "../controllers/usuarios.controller";
-import { limitadorAuth } from '../middlewares/rateLimit.middleware';
+import { verificarToken, soloAdmin, verificarTokenRecuperacion } from "../middlewares/auth.middleware.js";
+import { changePassword, createUser, loginUser, recoverPassword } from "../controllers/usuarios.controller.js";
+import { limitadorAuth } from '../middlewares/rateLimit.middleware.js';
 
 const router = Router();
 

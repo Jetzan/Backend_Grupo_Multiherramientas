@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { RequestConUsuario } from "../middlewares/auth.middleware";
-import { cambiarPassword, iniciarSesion, recuperarPassword, registrarUsuario } from "../services/usuario.service";
+import { RequestConUsuario } from "../middlewares/auth.middleware.js";
+import { cambiarPassword, iniciarSesion, recuperarPassword, registrarUsuario } from "../services/usuario.service.js";
 
 
 import nodemailer from "nodemailer";

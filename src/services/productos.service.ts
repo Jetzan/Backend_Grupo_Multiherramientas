@@ -1,8 +1,8 @@
-import { tipo_corriente } from "../../generated/prisma/enums";
-import  {prisma} from "../../lib/prisma"
-import cloudinary from "../config/cloudinary";
+import { tipo_corriente } from "../generated/prisma/enums.js";
+import { prisma } from "../lib/prisma.js";
+import cloudinary from "../config/cloudinary.js";
 import multer from "multer";
-import { obtenerUbicacion ,crearUbicacion} from "./ubicacion.service";
+import { obtenerUbicacion ,crearUbicacion} from "./ubicacion.service.js";
 
 interface IProductCreate{
     nombre: string,

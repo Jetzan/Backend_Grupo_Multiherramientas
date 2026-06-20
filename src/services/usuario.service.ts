@@ -1,5 +1,5 @@
-import { rol_usuario } from "../../generated/prisma/enums"
-import { prisma } from "../../lib/prisma"
+import { rol_usuario } from "../generated/prisma/enums.js"
+import { prisma } from "../lib/prisma.js";
 import bcrypt from "bcrypt";
 
 interface CreateUserInterface {

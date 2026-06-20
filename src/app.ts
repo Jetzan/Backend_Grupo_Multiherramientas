@@ -1,14 +1,14 @@
 import express from 'express';
 // Importar rutas de cada módulo
-import categoriasRoutes from './routes/categorias.routes'
-import usuariosRoutes from './routes/usuarios.routes'
-import productosRoutes from './routes/productos.routes'
-import marcasRoutes from './routes/marcas.routes';
-import ubicacionesRoutes from './routes/ubicaciones.routes';
-import noticiasRoutes from './routes/noticias.routes';
+import categoriasRoutes from './routes/categorias.routes.js'
+import usuariosRoutes from './routes/usuarios.routes.js'
+import productosRoutes from './routes/productos.routes.js'
+import marcasRoutes from './routes/marcas.routes.js';
+import ubicacionesRoutes from './routes/ubicaciones.routes.js';
+import noticiasRoutes from './routes/noticias.routes.js';
 import cors from 'cors';
 import helmet from 'helmet'; // evita clickjacking, sniffing, XSS y otras vulnerabilidades relacionadas con las cabeceras HTTP
-import { limitadorGeneral } from './middlewares/rateLimit.middleware'; //Limita las peticiones}
+import { limitadorGeneral } from './middlewares/rateLimit.middleware.js'; //Limita las peticiones}
 
 const app = express();
 app.use(helmet()); // Agrega Helmet para mejorar la seguridad de las cabeceras HTTP
