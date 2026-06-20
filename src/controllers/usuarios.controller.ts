@@ -25,8 +25,8 @@ const transporter = nodemailer.createTransport({
 
 
 async function enviarCorreo(correo: string, token: string) {
-  const linkRecuperacion = `${process.env.FRONTEND_URL}/Frontend_Grupo_Multiherramientas/reset-password?token=${token}`;
-    console.log( `${process.env.FRONTEND_URL}/Frontend_Grupo_Multiherramientas/reset-password?token=${token}`);
+  const linkRecuperacion = `${process.env.FRONTEND_URL}/Frontend_Grupo_Multiherramientas/#/reset-password?token=${token}`;
+    console.log( `${process.env.FRONTEND_URL}/Frontend_Grupo_Multiherramientas/#/reset-password?token=${token}`);
   await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
     headers: {
@@ -38,7 +38,10 @@ async function enviarCorreo(correo: string, token: string) {
       to: [{ email: correo }],
       subject: "Recuperación de contraseña",
       htmlContent: `<h3>Recuperar contraseña</h3>
-        <a href="${linkRecuperacion}">Cambiar contraseña</a>`
+        <p>Haz click en el siguiente enlace para cambiar tu contraseña.</p><br>
+        <strong>El enlace expira en 15 minutos</strong><br>
+        <a href="${linkRecuperacion}">Cambiar contraseña</a><br>
+        <p>Si no solicitase esto ignora este correo.</p>`
     }),
   });
 }
