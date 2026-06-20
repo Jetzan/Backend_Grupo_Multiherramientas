@@ -24,7 +24,7 @@ const transporter = nodemailer.createTransport({
 
 async function enviarCorreo(correo: string, token: string) {
     console.log(correo);
-    const linkRecuperacion = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+    const linkRecuperacion = `${process.env.FRONTEND_URL}/Frontend_Grupo_Multiherramientas/reset-password?token=${token}`;
 
     try {
         const info = await transporter.sendMail({
