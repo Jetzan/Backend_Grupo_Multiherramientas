@@ -11,6 +11,9 @@ import helmet from 'helmet'; // evita clickjacking, sniffing, XSS y otras vulner
 import { limitadorGeneral } from './middlewares/rateLimit.middleware.js'; //Limita las peticiones}
 
 const app = express();
+
+app.set("trust proxy", 1);
+
 app.use(helmet()); // Agrega Helmet para mejorar la seguridad de las cabeceras HTTP
 app.use( limitadorGeneral); // Aplica el limitador de peticiones a todas las rutas
 
@@ -24,6 +27,7 @@ app.use(cors({
 
 // Parsear JSON en las solicitudes
 app.use(express.json({limit: "1mb"})); // Limita cuerpo JSON para evitar abuso de memoria
+
 
 // Definir rutas de la API
 app.use('/categorias', categoriasRoutes);

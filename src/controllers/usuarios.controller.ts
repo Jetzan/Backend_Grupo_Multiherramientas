@@ -164,34 +164,35 @@ export async function recoverPassword(
             mensaje: error.message
         })
     }
-}
-export async function changePassword(
-    req: Request,
-    res: Response
-) {
-    try {
-        const { password } = req.body;
-        
-        // El correo viene del token verificado, no del body
-        const correo = (req as RequestConUsuario).usuario!.email;
+    }
+    export async function changePassword(
+        req: Request,
+        res: Response
+    ) {
+        try {
+            const { password } = req.body;
+            console.log(req.body);
+            console.log(password);
+            // El correo viene del token verificado, no del body
+            const correo = (req as RequestConUsuario).usuario!.email;
 
-        if (!password || password.length < 8) {
-            return res.status(400).json({
-                codigo: "PASSWORD_INVALIDO",
-                mensaje: "La contraseña debe tener al menos 8 caracteres"
+            if (!password || password.length < 8) {
+                return res.status(400).json({
+                    codigo: "PASSWORD_INVALIDO",
+                    mensaje: "La contraseña debe tener al menos 8 caracteres"
+                });
+            }
+
+            await cambiarPassword({ correo, password });
+
+            return res.status(200).json({
+                mensaje: "Contraseña cambiada correctamente"
+            });
+
+        } catch (error: any) {
+            return res.status(error.statusCode || 500).json({
+                codigo: error.codigo,
+                mensaje: error.message
             });
         }
-
-        await cambiarPassword({ correo, password });
-
-        return res.status(200).json({
-            mensaje: "Contraseña cambiada correctamente"
-        });
-
-    } catch (error: any) {
-        return res.status(error.statusCode || 500).json({
-            codigo: error.codigo,
-            mensaje: error.message
-        });
     }
-}

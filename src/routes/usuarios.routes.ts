@@ -19,6 +19,6 @@ router.post("/login", limitadorAuth,loginUser);
 //Mandar email 
 router.post("/recover", limitadorAuth,recoverPassword);
 //Cambiar la contraseña
-router.post("/changePassword", verificarTokenRecuperacion, limitadorAuth,changePassword);
+router.post("/changePassword", verificarTokenRecuperacion, limitadorAuth, changePassword);
 
 export default router;
