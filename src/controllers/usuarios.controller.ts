@@ -25,30 +25,22 @@ const transporter = nodemailer.createTransport({
 
 
 async function enviarCorreo(correo: string, token: string) {
-    console.log(correo);
-    const linkRecuperacion = `${process.env.FRONTEND_URL}/Frontend_Grupo_Multiherramientas/reset-password?token=${token}`;
-
-    try {
-        const info = await transporter.sendMail({
-
-            from: `"Grupo Multiherramientas" <${process.env.BREVO_SENDER}>`,
-            to: correo,
-            subject: 'Recuperación de contraseña',
-            html: `
-                <h3>Recuperar contraseña</h3>
-                <p>Haz click en el siguiente enlace para cambiar tu contraseña.</p>
-                <p><strong>El enlace expira en 15 minutos.</strong></p>
-                <a href="${linkRecuperacion}">Cambiar contraseña</a>
-                <p>Si no solicitaste esto, ignora este correo.</p>
-            `
-        }
-        )
-        console.log('✅ ¡Correos enviados con éxito!');
-        console.log('ID del mensaje Brevo:', info.messageId);
-        return info;
-    } catch (error) {
-        console.error('❌ Error completo:', error);
-    }
+  const linkRecuperacion = `${process.env.FRONTEND_URL}/Frontend_Grupo_Multiherramientas/reset-password?token=${token}`;
+    console.log( `${process.env.FRONTEND_URL}/Frontend_Grupo_Multiherramientas/reset-password?token=${token}`);
+  await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "api-key": process.env.BREVO_API_KEY!,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      sender: { name: "Grupo Multiherramientas", email: process.env.BREVO_SENDER },
+      to: [{ email: correo }],
+      subject: "Recuperación de contraseña",
+      htmlContent: `<h3>Recuperar contraseña</h3>
+        <a href="${linkRecuperacion}">Cambiar contraseña</a>`
+    }),
+  });
 }
 
 
